@@ -1,22 +1,13 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
-eslint: {
+const nextConfig = {
+  eslint: {
+    // Jangan jalankan ESLint saat build di Vercel
     ignoreDuringBuilds: true,
- {} };
-
-  // Jangan gagalkan build karena error TypeScript (sementara untuk memudahkan deploy)
+  },
   typescript: {
+    // Jangan blokir build karena error TS di server (tetap tampilkan di editor)
     ignoreBuildErrors: true,
-  {}}
-
-  // (Opsional) jika pakai app router dan tidak butuh fitur khusus
-  experimental: {
-    // matikan typedRoutes kalau sempat mengganggu
-    typedRoutes: false,
-  {}};
-
-  // (Opsional) keluaran yang mudah dijalankan di hosting
-  // output: "standalone",
-
+  },
+};
 
 export default nextConfig;
