@@ -2,7 +2,7 @@ export default function HomePage() {
   return (
     <main
       className="min-h-screen flex flex-col items-left justify-left bg-cover bg-left text-white"
-      style={{ backgroundImage: "url('/museum.jpeg')" }}
+      style={{ backgroundImage: "url('/museum_mulawarman_1200.jpg')" }}
     >
       <div className="bg-opacity-50 p-8 rounded-lg text-left">
         <h1 className="text-4xl font-bold mb-4">Selamat Datang di</h1>
