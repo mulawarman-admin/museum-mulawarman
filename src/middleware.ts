@@ -1,23 +1,17 @@
-import { NextResponse } from "next/server";
+// src/middleware.ts
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const { pathname, search } = req.nextUrl;
-
-  // Lindungi semua path di bawah /admin KECUALI /admin/login
-  const isAdmin = pathname.startsWith("/admin");
-  const isLogin = pathname.startsWith("/admin/login");
-
-  if (isAdmin && !isLogin) {
-    const token = req.cookies.get("admin_auth")?.value;
+  const token = req.cookies.get("admin_auth")?.value;
+  if (req.nextUrl.pathname.startsWith("/admin")) {
     if (token !== process.env.ADMIN_PASS) {
       const url = req.nextUrl.clone();
-      url.pathname = "/admin/login";
-      url.search = `?next=${encodeURIComponent(pathname + search)}`;
+      url.pathname = "/login";
+      url.search = `?next=${encodeURIComponent(req.nextUrl.pathname + req.nextUrl.search)}`;
       return NextResponse.redirect(url);
     }
   }
-
   return NextResponse.next();
 }
 
