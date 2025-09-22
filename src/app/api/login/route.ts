@@ -1,14 +1,14 @@
-// src/app/api/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+  // Baca dua nama ENV dan trim spasi
+  const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD ?? process.env.ADMIN_PASS ?? "").trim();
   if (!ADMIN_PASSWORD) {
     return NextResponse.json({ message: "ADMIN_PASSWORD belum diset" }, { status: 500 });
   }
 
+  // Terima form atau JSON
   let password = "";
-  // dukung form POST dan JSON
   const ct = req.headers.get("content-type") || "";
   try {
     if (ct.includes("application/json")) {
@@ -18,24 +18,26 @@ export async function POST(req: NextRequest) {
       const form = await req.formData();
       password = String(form.get("password") ?? "");
     }
-  } catch { /* ignore */ }
+  } catch {}
 
   const next = req.nextUrl.searchParams.get("next") || "/admin";
-  const target = new URL(next, req.url); // pastikan absolute URL
 
-  if (password !== ADMIN_PASSWORD) {
-    // balik ke login dengan pesan error sederhana (opsional tambahkan ?err=1)
-    const back = new URL(`/login?next=${encodeURIComponent(next)}`, req.url);
-    return NextResponse.redirect(back, { status: 302 });
+  // Salah password → balik ke /login?error=1
+  if (password.trim() !== ADMIN_PASSWORD) {
+    return NextResponse.redirect(
+      new URL(`/login?error=1&next=${encodeURIComponent(next)}`, req.url),
+      { status: 302 }
+    );
   }
 
-  const res = NextResponse.redirect(target, { status: 302 });
+  // Benar → set cookie + redirect ke target
+  const res = NextResponse.redirect(new URL(next, req.url), { status: 302 });
   res.cookies.set("admin_auth", "1", {
     httpOnly: true,
-    secure: true,       // Vercel = HTTPS
+    secure: true,   // Vercel = HTTPS
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 8 // 8 jam
+    maxAge: 60 * 60 * 8, // 8 jam
   });
   return res;
 }

@@ -3,6 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 import { FaHome, FaTachometerAlt, FaTable, FaPlus, FaUsers, FaList } from "react-icons/fa";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+// jangan ada "use client" di file ini
+
+ 
+  const authed = cookies().get("admin_auth")?.value === "1";
+  if (!authed) redirect("/login?next=%2Fadmin");
+
+
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [openKoleksi, setOpenKoleksi] = useState(false);
