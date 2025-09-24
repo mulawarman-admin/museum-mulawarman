@@ -3,12 +3,9 @@ import { NextResponse, type NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
   const p = req.nextUrl.pathname;
 
-  // Biarkan API/asset
   if (p.startsWith("/api") || p.startsWith("/_next") || p === "/favicon.ico") {
     return NextResponse.next();
   }
-
-  // Kunci semua /admin/**
   if (p.startsWith("/admin")) {
     const authed = req.cookies.get("admin_auth")?.value === "1";
     if (!authed) {
@@ -18,7 +15,6 @@ export function middleware(req: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
-
   return NextResponse.next();
 }
 
