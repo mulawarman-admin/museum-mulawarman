@@ -93,6 +93,20 @@ function ProgresUploadKoleksi() {
     </div>
   );
 }
+// GUARD LOGIN — tempel di paling atas dalam fungsi
+const [ready, setReady] = useState(false);
+
+useEffect(() => {
+  // cek cookie admin_auth=1
+  const authed = document.cookie.split("; ").some(c => c.startsWith("admin_auth=1"));
+  if (!authed) {
+    // bawa kembali ke halaman semula setelah login
+    const next = window.location.pathname + window.location.search;
+    window.location.replace(`/login?next=${encodeURIComponent(next)}`);
+  } else {
+    setReady(true);
+  }
+}, []);
 
 /* -------------------- halaman dashboard -------------------- */
 export default function AdminDashboard() {

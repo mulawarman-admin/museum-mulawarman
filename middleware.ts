@@ -1,40 +1,34 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
   const { pathname, searchParams } = req.nextUrl;
 
-  // biarkan API & asset lewat
+  // Jangan ganggu API/static/asset
   if (
     pathname.startsWith("/api") ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon") ||
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp|avif|css|js|map|woff2?)$/)
+    pathname === "/favicon.ico" ||
+    pathname === "/robots.txt" ||
+    pathname === "/sitemap.xml"
   ) {
     return NextResponse.next();
   }
 
-  // halaman yang dilindungi
-  const protectedRoots = ["/admin"];
-  const isProtected = protectedRoots.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`)
-  );
-  if (!isProtected) return NextResponse.next();
+  // Proteksi semua halaman /admin
+  if (pathname.startsWith("/admin")) {
+    const authed = req.cookies.get("admin_auth")?.value === "1";
+    if (!authed) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("next", "/admin");
+      // opsional: tampilkan error jika barusan gagal
+      if (searchParams.get("error") === "1") url.searchParams.set("error", "1");
+      return NextResponse.redirect(url);
+    }
+  }
 
-  // cek cookie
-  const authed = req.cookies.get("admin_auth")?.value === "1";
-  if (authed) return NextResponse.next();
-
-  // kalau belum login → redirect ke /login
-  const url = req.nextUrl.clone();
-  url.pathname = "/login";
-  url.searchParams.set(
-    "next",
-    pathname + (searchParams.toString() ? `?${searchParams}` : "")
-  );
-  return NextResponse.redirect(url);
+  return NextResponse.next();
 }
 
-export const config = {
-  matcher: ["/((?!.*\\.).*)"], // jalankan untuk semua route non-file
-};
+// Matcher default sudah cukup; kalau mau lebih ketat, bisa atur di sini

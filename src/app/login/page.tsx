@@ -1,3 +1,12 @@
-"use client";
 import LoginForm from "./loginForm";
-export default function LoginPage() { return <LoginForm />; }
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const sp = await searchParams;
+  const next = sp?.next ?? "/admin";
+
+  return <LoginForm next={next} />;
+}
