@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 export default function LoginPage({
   searchParams,
 }: { searchParams?: Record<string, string | string[] | undefined> }) {
@@ -7,7 +9,7 @@ export default function LoginPage({
   return (
     <div className="min-h-screen grid place-items-center bg-gray-50">
       <form method="POST" action={`/api/login?next=${encodeURIComponent(next)}`} className="w-full max-w-sm bg-white p-6 rounded-2xl shadow">
-        <h1 className="text-2xl font-bold mb-4">Masuk Admin</h1>
+        <h1 className="text-2xl font-bold mb-4">Masuk Admin• vCHECK-01</h1>
         <label className="text-sm mb-1 block">Password admin</label>
         <input name="password" type="password" className="w-full border rounded-lg px-3 py-2 mb-2" required autoFocus />
         {error && <p className="text-sm text-red-600 mb-2">Password salah. Coba lagi.</p>}

@@ -93,23 +93,22 @@ function ProgresUploadKoleksi() {
     </div>
   );
 }
-// GUARD LOGIN — tempel di paling atas dalam fungsi
-const [ready, setReady] = useState(false);
-
-useEffect(() => {
-  // cek cookie admin_auth=1
-  const authed = document.cookie.split("; ").some(c => c.startsWith("admin_auth=1"));
-  if (!authed) {
-    // bawa kembali ke halaman semula setelah login
-    const next = window.location.pathname + window.location.search;
-    window.location.replace(`/login?next=${encodeURIComponent(next)}`);
-  } else {
-    setReady(true);
-  }
-}, []);
-
 /* -------------------- halaman dashboard -------------------- */
 export default function AdminDashboard() {
+  // ===== GUARD LOGIN (client) =====
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const authed = document.cookie.split("; ").some(c => c.startsWith("admin_auth=1"));
+    if (!authed) {
+      const next = window.location.pathname + window.location.search;
+      window.location.replace(`/login?next=${encodeURIComponent(next)}`);
+    } else {
+      setReady(true);
+    }
+  }, []);
+  if (!ready) return null; // stop render until authed
+  // ===== END GUARD =====
+
   const [items, setItems] = useState<KoleksiItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
