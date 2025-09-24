@@ -1,29 +1,20 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const { pathname, searchParams } = req.nextUrl;
+  const p = req.nextUrl.pathname;
 
-  // Jangan ganggu API/static/asset
-  if (
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/_next") ||
-    pathname === "/favicon.ico" ||
-    pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml"
-  ) {
+  // Biarkan API/asset
+  if (p.startsWith("/api") || p.startsWith("/_next") || p === "/favicon.ico") {
     return NextResponse.next();
   }
 
-  // Proteksi semua halaman /admin
-  if (pathname.startsWith("/admin")) {
+  // Kunci semua /admin/**
+  if (p.startsWith("/admin")) {
     const authed = req.cookies.get("admin_auth")?.value === "1";
     if (!authed) {
       const url = req.nextUrl.clone();
       url.pathname = "/login";
       url.searchParams.set("next", "/admin");
-      // opsional: tampilkan error jika barusan gagal
-      if (searchParams.get("error") === "1") url.searchParams.set("error", "1");
       return NextResponse.redirect(url);
     }
   }
@@ -31,4 +22,4 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Matcher default sudah cukup; kalau mau lebih ketat, bisa atur di sini
+export const config = { matcher: ["/admin/:path*"] };
