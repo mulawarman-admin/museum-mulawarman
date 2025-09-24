@@ -1,9 +1,9 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import type { ReactNode } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 // JANGAN ada "use client" di file ini
 export default async function AdminLayout({ children }: { children: ReactNode }) {
